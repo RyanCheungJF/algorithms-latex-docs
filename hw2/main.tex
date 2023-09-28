@@ -1,0 +1,353 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{fullpage}
+\usepackage[top=2cm, bottom=4.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{array}
+\usetikzlibrary{matrix}
+
+\hypersetup{%
+  colorlinks=true,
+  linkcolor=blue,
+  linkbordercolor={0 0 1}
+}
+ 
+\renewcommand\lstlistingname{Section}
+\renewcommand\lstlistlistingname{Algorithms}
+\def\lstlistingautorefname{Alg.}
+
+\lstdefinestyle{Python}{
+    language        = Python,
+    frame           = lines, 
+    basicstyle      = \footnotesize,
+    keywordstyle    = \color{blue},
+    stringstyle     = \color{green},
+    commentstyle    = \color{red}\ttfamily
+}
+
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+% Edit these as appropriate
+\newcommand\course{CSE 3500}
+\newcommand\hwnumber{2}                  % <-- homework number
+\newcommand\NetIDa{rjf23002}           % <-- NetID of person #1
+\newcommand\NetIDb{}           % <-- NetID of person #2 (Comment this line out for problem sets)
+
+\pagestyle{fancyplain}
+\headheight 35pt
+\lhead{\NetIDa}
+\lhead{\NetIDa\\\NetIDb}                 % <-- Comment this line out for problem sets (make sure you are person #1)
+\chead{\textbf{\Large Homework \hwnumber}}
+\rhead{\course \\ \today}
+\lfoot{}
+\cfoot{}
+\rfoot{\small\thepage}
+\headsep 1.5em
+
+\begin{document}
+
+\section*{Problem 0}
+
+\begin{enumerate}
+    \item
+    Leaves at level k: $2^k$ \\
+    Work done at top: O(n) \\
+    Work done at level k: $2^k$ * O[(n/$2^k$)] = O(n)\\
+    Work done across all levels: $log_2 n$ * O(n) \\
+    Conclusion: Even work \\
+    Bound: O(nlogn)
+    \item
+    Leaves at level k: $2^k$ \\
+    Work done at top: O(1) \\
+    Work done at level k: $2^k$ * O(1) = $O(2^k)$ \\
+    Work done across all levels: $\sum^{log_2 n}_{i=1} O(2^k)$ = 2(n - 1) \\
+    Conclusion: Bottom Heavy \\
+    Bound: O(n)
+     \item
+    Leaves at level k: $7^k$ \\
+    Work done at top: $O(n^3)$ \\
+    Work done at level k: $7^k$ * O[$(n/{2^k})^3$] = $(7/8)^k$ * O($n^3$) $<$ Top level work done \\
+    Conclusion: Top Heavy \\
+    Bound: O($n^3$)
+    \item
+    Leaves at level k: $7^k$ \\
+    Work done at top: $O(n^2)$ \\
+    Work done at level k: $7^k$ * O[$(n/{2^k})^2$] = $(7/4)^k$ * O($n^2$) \\
+    Work done across all levels: $\sum^{log_2n}_{i=1} (7/4)^k * O(n^2) = 7^{log_2 n}$ without constants \\
+    Conclusion: Bottom Heavy \\
+    Bound: O($n^{log_2 7}$)
+    \item
+    Leaves at level k: $4^k$ \\
+    Work done at top: $O(n^{2.5})$ \\
+    Work done at level k: $4^k$ * O[$(n/{2^k})^{5/2}$] = $2^{0.5k} * O(n^{2.5}) <$ Top level work done \\
+    Conclusion: Top Heavy \\
+    Bound: O($n^{2.5}$)
+    \item
+    Leaves at level k: $4^k$ \\
+    Work done at top: $O(nlog_2 n)$ \\
+    Work done at level k: $4^k$ * O[$(n/2^k)log(n/2^k)$] = O($2^knlogn$) without constants \\
+    Work done across all levels: $\sum^{log_2n}_{i=1} 2^k * O(nlogn) = O(nlogn) * n $ without constants \\
+    Conclusion: Bottom Heavy \\
+    Bound: O($n^2logn$)
+\end{enumerate}
+
+\newpage
+
+\section*{Problem 1}
+
+We can solve this problem with divide and conquer by
+splitting up a valid board into smaller multiple valid boards.
+Given an arbitrary value k, we have a board of width and height $2^k$.
+We notice that it is actually made up of 4 instances of a board $2^{k - 1}$. 
+This splits up into 4 similar subproblems. 
+Let us take a single subproblem (assume the subproblem we are looking into contains the removed cell) and continue breaking it down. 
+We can continuously repeat this until we get to a base case where k = 1. \\
+
+At k = 1, we have a 2x2 grid.
+With a 2x2 grid, we can remove the top left and we are left with 3 remaining cells. 
+These cells can be nicely filled with a single L.
+Futhermore, we can also observe the other trivial base case of k = 0.
+At k = 0, we only have a 1x1 grid.
+Since the top left is removed, there is nothing to fill.
+Hence, for a board of dimensions $2^k$ where k $>= 0$, we can fill everything but a single cell just using L shapes. \\
+
+At the merge step, we are combining 4 similar subproblems.
+However, only one subproblem has the cell taken out, while the other 3 do not.
+Hence, we still have 3 subproblems where they have a single cell not filled out. 
+If we were to orientate these 3 subproblems such that 
+the missing cells are at the corners of the grid, 
+we are actually able to combine these 3 missing cells towards the middle during merging.
+Hence, these 3 missing cells can actually be fitted with a final L such that we can get a complete grid given that we remove a single cell.
+Therefore, at any merging step, we are able to combine subproblems to form a valid solution.
+
+\newpage
+
+\section*{Problem 2}
+
+\lstset{caption={Counting Inversions, Merge Sort}}
+    \lstset{label={lst:alg1}, numbers=left}
+    \begin{lstlisting}[style = Python]
+        def count_inversions(arr: list) -> int:
+            def combine(a1: list, a2: list) -> (int, list):
+                inversions = 0
+                i, j = 0, 0
+                # we sort the two input arrays and return it
+                sorted_arr = []
+
+                # iterate using two pointers to compare since they are sorted 
+                while i < len(a1) and j < len(a2):
+                    if a1[i] <= a2[j]:
+                        sorted_arr.append(a1[i])
+                        i += 1
+                    else:
+                        # invariant that both arrays are sorted
+                        # hence, all numbers after a1[i] will cause an inversion
+                        inversions += (len(a1) - i)
+                        sorted_arr.append(a2[j])
+                        j += 1
+        
+                # fill in the rest of the array
+                while i < len(a1):
+                    sorted_arr.append(a1[i])
+                    i += 1
+                while j < len(a2):
+                    sorted_arr.append(a2[j])
+                    j += 1
+                    
+                return inversions, sorted_arr
+            
+            def merge(arr: list) -> (int, list):
+                # base case, nothing more to split
+                if len(arr) <= 1:
+                    return 0, arr
+                
+                mid = len(arr) // 2
+
+                left_inversions, lhs = merge(arr[:mid])
+                right_inversions, rhs = merge(arr[mid:])
+                inversions, sorted_arr = combine(lhs, rhs)
+                # sum up the inversions we got from our subproblems
+                res = left_inversions + right_inversions + inversions
+                
+                return res, sorted_arr
+            
+            return merge(arr)[0]
+  \end{lstlisting}
+
+    We can use divide and conquer to solve this problem, applying a similar technique to merge sort.
+    Instead of dealing with an array of size n, we can instead break up the array into two halves of similar length n/2. 
+    We keep breaking it up until we have small chunks of size 1 or an empty array, which is our base case.
+    Once we have obtained our small arrays, we can then do the rebuilding/ combining step, similar to merge sort. \\
+    
+    In this step, we can sort our array and also count the inversions at the same time.
+    This is because it is easier to count the number of inversions when we have 2 sorted arrays.
+    For example, given a1[i] and a2[j] such that a1[i] $>$ a2[j].
+    If this was true, then any element after index i in a1 will also require an inversion.
+    Hence, we can exploit this property to add (len(a1) - i) inversions at once (the remaining number of elements greater than a1[i]).
+    We can then return our merged array which is sorted as well as the total number of inversions from this combination step.
+    It will then be propagated for use in upper level recursion calls. \\
+    
+    Invariants: 
+    Arrays in combination step are sorted, maintained by the fact that it the combination step also returns sorted arrays. \\
+    Additionally, due to the invariant above, there are (len(a1) - i) additional inversions for a single comparison a[i] $>$ a[j] if it holds true. \\
+    
+    Runtime: 
+    For a problem size of n, we split it into 2 subproblems of size n/2 recursively. 
+    This gives the relationship of subproblems to be T(n) = 2T(n/2).
+    For the merging step, we iteratively go through the subarrays of combined sizes n, n/2, n/4, ..., n/k such that n/k = 1.
+    Hence, at each an arbitrary level k, we do O(n/k) amount of work for the merge. 
+    Thus, the final recurrence can be given by T(n) = 2T(n/2) + O(n). 
+    Therefore, at each level, we do O(n) amount of work.
+    Given that there are $log_2 n$ levels, the time complexity is hence bounded by O(nlogn).
+
+\newpage
+
+\section*{Problem 3}
+
+\begin{enumerate}
+    \item 
+    \lstset{caption={Best Subset Middle (BSM)}}
+    \lstset{label={lst:alg1}, numbers=left}
+    \begin{lstlisting}[style = Python]
+        def bsm(arr: list) -> int:
+            mid = len(arr) // 2
+            left_max, left_curr = float("-inf"), 0
+            right_max, right_curr = float("-inf"), 0
+            
+            for i in range(mid, -1, -1):
+                left_curr += arr[i]
+                left_max = max(left_max, left_curr)
+            
+            for i in range(mid + 1, len(arr)):
+                right_curr += arr[i]
+                right_max = max(right_max, right_curr)
+
+            # add the two prefix sums
+            return left_max + right_max
+    \end{lstlisting}
+    
+    Let us use a prefix sum algorithm to solve the problem of best subset middle (BSM). 
+    BSM states that we just have to find a range of values which includes our floor(n/2) element 
+    such that the sum of these values is maximum.
+    We can start by pivoting around our middle element and
+    searching for contiguous subarrays on the LHS and RHS of the middle element that has maximal sum.
+    As our final result has to be a contiguous subarray, 
+    we can use a prefix sum technique of accumulating the values. 
+    Using a prefix sum, we don't consider a single element by itself, 
+    but instead iterate and accumulate the values.
+    What we care about instead is whether or not it contributes to our accumulated value, and makes it larger.
+    If it does, it means that we can extend our contiguous subarray.
+    After finding the contiguous subarrays on the LHS and RHS, 
+    we can then sum them up as both subarrays give the maximal sums on their respective sides. \\
+    
+    Invariant: 
+    The total we get from accumulating a set of values 
+    guarantees us that all elements up till this index is used in the accumulation. \\
+
+    Runtime: 
+    As we only need to iterate the LHS and RHS of the median once, it would be 2 separate O(n/2) operations, hence it is O(n) overall.
+
+    \newpage
+    
+    \item 
+    \lstset{caption={Best Subset (BS)}}
+    \lstset{label={lst:alg1}, numbers=left}
+    \begin{lstlisting}[style = Python]
+        def bs(arr: list) -> int:
+            def bsm(arr: list) -> int:
+                # from previous part ...
+            
+            def merge(arr: list) -> int:
+                if len(arr) == 0:
+                    return float("-inf")
+                if len(arr) == 1:
+                    return arr[0]
+                
+                mid = (len(arr)) // 2
+                left_merge_max = merge(arr[:mid])
+                right_merge_max = merge(arr[mid:])
+                bsm_curr_arr = bsm(arr)
+                
+                return max(left_merge_max, right_merge_max, bsm_curr_arr)
+                
+            return merge(arr)
+    \end{lstlisting}
+    
+    Let us call our function from the previous section BSM. Given an input array of size n, 
+    we can find the best subset (BS) using a technique similar to merge sort.
+    Let us recursively split our sized array n into 2 halves of n/2.
+    We can repeatedly do so until we have a base case of array sized 1 or an empty array.
+    Once we have gotten our small arrays, we can do the rebuilding/ combining step which utilizes our BSM. 
+    Hence, here we have 3 values to compare with: either the max from the LHS, max from RHS, 
+    or the new max from utilizing some subarray that crosses the middle.
+    We require the BSM step as when we find the max on the LHS and RHS, 
+    we don't consider if there could be a higher max from some combination of the LHS and RHS
+    (as we consider them separately while doing the divide and conquer).
+
+    \item 
+    There are 3 cases in this problem and our algorithm. 
+    We can either take the max from the LHS, the RHS or the BSM.
+    Let us assume from the previous part that we have proven the correctness of BSM. 
+    In that case, we can assume that BSM does give us an accurate max. \\
+    
+    Invariant:
+    As our function call of merge returns the max of all 3 options, we can thus guarantee that similar recursive function calls will also return the maximum. \\
+    
+    Runtime: 
+    For a problem size of n, we split it into 2 subproblems of size n/2 recursively. 
+    This gives the relationship of subproblems to be T(n) = 2T(n/2).
+    For the merging step (BSM), we iteratively go through the subarrays of combined sizes n, n/2, n/4, ..., n/k such that n/k = 1.
+    Hence, at each an arbitrary level k, we do O(n/k) amount of work for the merge. 
+    Thus, the final recurrence can be given by T(n) = 2T(n/2) + O(n). 
+    Therefore, at each level, we do O(n) amount of work.
+    Given that there are $log_2 n$ levels, the time complexity is hence bounded by O(nlogn).
+
+    \item 
+    \lstset{caption={Best Subset (BS) Linear}}
+    \lstset{label={lst:alg1}, numbers=left}
+    \begin{lstlisting}[style = Python]
+        def bs_linear(arr: list) -> int:
+            l = 0
+            total, res = 0, float("-inf")
+        
+            # two pointer approach
+            for r, val in enumerate(arr):
+                # reset value when negative
+                while total < 0 and l < r:
+                    total -= arr[l]
+                    l += 1
+                total += val
+                res = max(res, total)
+                
+            return res
+    \end{lstlisting}
+
+    For a linear time algorithm, we can use a two pointer approach.
+    The two pointer approach maintains our contiguous subarray.
+    We can keep adding elements and updating the total until it becomes too small.
+    We define too small as a negative total, 
+    where at that point we can try to remove some of the earlier numbers 
+    (imagine an array with all negative elements).
+    We continue this process until we reach the end of the array. \\
+
+    Invariants:
+    This applies the prefix sum technique. 
+    Thus at every index i, we can guarantee that we have found the maximum possible sum for a subset using elements up to i inclusive. \\
+
+    Runtime:
+    O(n) as we are just iterating the array from left to right.
+
+\end{enumerate}
+
+\end{document}
