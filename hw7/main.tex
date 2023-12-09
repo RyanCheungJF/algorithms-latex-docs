@@ -1,0 +1,124 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{fullpage}
+\usepackage[top=2cm, bottom=4.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{array}
+\usetikzlibrary{matrix}
+
+\hypersetup{%
+  colorlinks=true,
+  linkcolor=blue,
+  linkbordercolor={0 0 1}
+}
+ 
+\renewcommand\lstlistingname{Section}
+\renewcommand\lstlistlistingname{Algorithms}
+\def\lstlistingautorefname{Alg.}
+
+\lstdefinestyle{Python}{
+    language        = Python,
+    frame           = lines, 
+    basicstyle      = \footnotesize,
+    keywordstyle    = \color{blue},
+    stringstyle     = \color{green},
+    commentstyle    = \color{red}\ttfamily
+}
+
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+
+% Edit these as appropriate
+\newcommand\course{CSE 3500}
+\newcommand\hwnumber{6}                  % <-- homework number
+\newcommand\NetIDa{rjf23002}           % <-- NetID of person #1
+\newcommand\NetIDb{}           % <-- NetID of person #2 (Comment this line out for problem sets)
+
+\pagestyle{fancyplain}
+\headheight 35pt
+\lhead{\NetIDa}
+\lhead{\NetIDa\\\NetIDb}                 % <-- Comment this line out for problem sets (make sure you are person #1)
+\chead{\textbf{\Large Homework \hwnumber}}
+\rhead{\course \\ \today}
+\lfoot{}
+\cfoot{}
+\rfoot{\small\thepage}
+\headsep 1.5em
+
+\begin{document}
+
+\section*{Problem 0}
+\begin{enumerate}
+  \item
+    No.
+    A scheduling solution cannot be used to solve a node cover solution. 
+    A scheduling solution is greedy in nature and chooses nodes which give it the most profit P
+    in a certain time t.
+    However, this selection of nodes may not ensure that the node cover property is adhered too,
+    i.e it doesn't guarantee us that we select the smallest selection of nodes,
+    but rather just a set of nodes based on its greedy approach. 
+  \item
+    Yes.
+    A node cover solution can use be to use solve a scheduling problem of at least profit P.
+    A node cover solution just chooses a smallest set of nodes which are able to be connected to all other nodes through its edges.
+    As such, if we were to formulate the scheduling problem as a graph, 
+    we can imagine at each step we can choose a job i, and following that we pick other jobs which are directly connected (excluding i).
+    Hence, a node cover solution would produce a solution which is able to maximize connectivity among the graph.
+    From there, we have certain jobs selected from the node cover.
+    What's left is to see if there are any other remaining jobs that have not gone past the deadline, 
+    and if the total sum of points is able to exceed P.
+\end{enumerate}
+
+\section*{Problem 1}
+Hamilton Path $>$ Hamilton cycle: \\
+Not every Hamilton path is a Hamilton cycle. 
+Given that a Hamilton cycle definitely exists in a graph, 
+we can generate all valid Hamilton paths.
+From there, we can then choose a particular path where it is just one edge away from becoming a cycle. \\\\
+Hamilton Path $<$ Hamilton cycle: \\
+If we can find a valid cycle, that means that it is essentially a Hamilton path,
+just without the ending loop to the vertex.
+
+\section*{Problem 2}
+We can use node cover to solve this problem.
+We can construct a graph of nodes and edges where we have different types of nodes: areas and counsellors.
+We form an edge between counsellors and areas.
+Then, we run node cover on the different counsellors nodes to get a small
+set of counsellors that cover all areas.
+With our set, we can then check if we have at most k counsellors.
+
+\section*{Problem 3}
+
+\begin{enumerate}
+  \item 
+    We can design the system as a graph such that there are n process nodes.
+    We then connect process nodes to each other only if they use the same resource.
+    For example, if process A and B both use a resource C, then nodes A and B should have a link.
+    We can then run independent set on this graph.
+    If we take process A, then we cannot take process B, 
+    as that would mean that process A uses resource C, 
+    which disallows process B to run.
+    Hence, it is consistent with the independent set problem.
+    As such, we can find all independent sets possible.
+    Once we have found all independent sets, we can then find if there exists one set which have a size of k.
+    If so, that means that there are at least k processes that are able to run.
+  \item 
+    We can reuse the previous solution, but just find sets where its size is at least 2.
+  \item
+    We just have to modify the graph such that cpu1 and cpu2 are different entities.
+    Hence, we can connect process A to both cpu1 and cpu2 if they require a cpu.
+  \item 
+    We can still use the solution from part a to solve this.
+\end{enumerate}
+
+\end{document}
